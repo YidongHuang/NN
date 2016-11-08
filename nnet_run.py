@@ -31,7 +31,7 @@ def main(argv):
 
 def standardizer(data):
     num_col = len(data[0])
-    for i in range(num_col):
+    for i in range(num_col - 1):
         column = [elem[i] for elem in data]
         mean = np.mean(column)
         std = np.std(column)
