@@ -1,0 +1,9 @@
+@relation test
+@attribute 'x' real
+@attribute 'y' real
+@attribute 'class' { negative, positive}
+@data
+1,1,negative
+1,0,positive
+0,1,positive
+0,0,negative

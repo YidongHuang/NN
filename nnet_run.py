@@ -19,40 +19,38 @@ def main(argv):
             for i in range(len(train_file_meta[feature_name][1])):
                 feature_range[train_file_meta[feature_name][1][i]] = i
             dict[feature_name] = feature_range
-    train_data = multi_sample_parser(train_file_data, train_file_meta, dict)
-    test_data = multi_sample_parser(test_file_data, train_file_meta, dict)
-    train_data = np.matrix(standardizer(train_data))
-    test_data = np.matrix(standardizer(test_data))
-
-    n_net = nn.neuro_net(learning_rate, num_hidden_units, num_epochs, train_data)
-    n_net.test(test_data)
-    n_net.print_matrix()
+    mean_std = get_mean_std(train_file_meta, train_file_data)
+    train_data = np.matrix(multi_sample_parser(train_file_data, train_file_meta, dict, mean_std[0], mean_std[1]))
+    test_data = np.matrix(multi_sample_parser(test_file_data, train_file_meta, dict, mean_std[0], mean_std[1]))
+    n_net = nn.neuro_net(learning_rate, num_hidden_units, num_epochs, train_data, test_data)
+    n_net.train_nn()
 
 
-def standardizer(data):
-    num_col = len(data[0])
-    for i in range(num_col - 1):
-        column = [elem[i] for elem in data]
-        mean = np.mean(column)
-        std = np.std(column)
-        if std == 0.0:
-            continue
-        for sample in data:
-            sample[i] = (float(sample[i] - mean))/std
-    return data
+def get_mean_std(meta, data):
+    mean = []
+    std = []
+    for i in range(len(data[0])):
+        if meta.types()[i] == 'numeric':
+            column = [elem[i] for elem in data]
+            mean.append(np.mean(column))
+            std.append(np.std(column))
+        else:
+            mean.append(None)
+            std.append(None)
+    return (mean, std)
 
 
-def multi_sample_parser(samples, meta, dict):
+def multi_sample_parser(samples, meta, dict, mean, std):
     new_data = []
     for i in range(len(samples)):
-        new_data.append(single_sample_parser(samples[i], meta, dict))
+        new_data.append(single_sample_parser(samples[i], meta, dict, mean, std))
     return new_data
 
-def single_sample_parser(data, meta, dict):
+def single_sample_parser(data, meta, dict, mean, std):
     parsed_data = []
     for i in range(len(meta.types())):
         if meta.types()[i] == "numeric":
-            parsed_data.append(data[i])
+            parsed_data.append((data[i] - mean[i])/std[i])
         else:
             feature_name = meta.names()[i]
             feature_range = dict[feature_name]
