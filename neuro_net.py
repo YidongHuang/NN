@@ -39,9 +39,9 @@ class neuro_net:
 
     def train_nn(self):
         if self.num_hidden_units > 0:
-            self.train_nn_with_hidden_unit()
+            return self.train_nn_with_hidden_unit()
         else:
-            self.train_nn_no_hidden_unit()
+            return self.train_nn_no_hidden_unit()
 
 
     def train_nn_with_hidden_unit(self):
@@ -77,9 +77,9 @@ class neuro_net:
                     self.input_layer[k,:] = np.add(self.input_layer[k,:], np.multiply(self.learning_rate * delta_hidden_unit[k], train_sample))
                     # print "input layer changed to {}".format(self.input_layer[k,:])
             test = self.test_with_hidden_unit()
-            print "epoch time is {}, error is {}, correctly predicted {}, incorrectly predicted {}".format(i, test[2],test[0],test[1])
-            tests_over_epoch.append(test)
-        return 0
+            print "epoch time is {}, error is {}, correctly predicted {}, incorrectly predicted {}".format(i+1, test[2],test[0],test[1])
+            tests_over_epoch.append(test[2])
+        return tests_over_epoch
 
 
     def train_nn_no_hidden_unit(self):
@@ -96,9 +96,9 @@ class neuro_net:
                 self.input_layer = np.add(self.input_layer, np.multiply(self.learning_rate * delta ,train_sample))
                 # print "step is {}, self.input_layer is {}".format(np.multiply(self.learning_rate * delta ,train_sample), self.input_layer)
             test = self.test_no_hidden_unit()
-            print "epoch time is {}, error is {}, correctly predicted {}, incorrectly predicted {}".format(i, test[2], test[0], test[1])
-            tests_over_epoch.append(test)
-        return 0
+            print "epoch time is {}, error is {}, correctly predicted {}, incorrectly predicted {}".format(i + 1, test[2], test[0], test[1])
+            tests_over_epoch.append(test[2])
+        return tests_over_epoch
 
     def get_sigmoid(self, net):
         return 1/(1 + math.exp( - net))

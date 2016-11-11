@@ -2,6 +2,8 @@ from scipy.io.arff import loadarff
 import sys
 import numpy as np
 import neuro_net as nn
+import math as math
+import matplotlib.pyplot as plt
 
 def main(argv):
     learning_rate = float(argv[0])
@@ -22,8 +24,41 @@ def main(argv):
     mean_std = get_mean_std(train_file_meta, train_file_data)
     train_data = np.matrix(multi_sample_parser(train_file_data, train_file_meta, dict, mean_std[0], mean_std[1]))
     test_data = np.matrix(multi_sample_parser(test_file_data, train_file_meta, dict, mean_std[0], mean_std[1]))
+
     n_net = nn.neuro_net(learning_rate, num_hidden_units, num_epochs, train_data, test_data)
     n_net.train_nn()
+
+    x_axis = [1,10,100,500]
+    y_axis_1 = []
+    y_axis_2 = []
+    n_net = nn.neuro_net(learning_rate, 0, 1, train_data, test_data)
+    print n_net.train_nn()
+    y_axis_1.append(np.mean(n_net.train_nn()))
+
+    n_net = nn.neuro_net(learning_rate, 0, 10, train_data, test_data)
+    y_axis_1.append(np.mean(n_net.train_nn()))
+
+    n_net = nn.neuro_net(learning_rate, 0, 100, train_data, test_data)
+    y_axis_1.append(np.mean(n_net.train_nn()))
+
+    n_net = nn.neuro_net(learning_rate, 0, 500, train_data, test_data)
+    y_axis_1.append(np.mean(n_net.train_nn()))
+
+    n_net = nn.neuro_net(learning_rate, 0, 1, train_data, train_data)
+    y_axis_2.append(np.mean(n_net.train_nn()))
+
+    n_net = nn.neuro_net(learning_rate, 0, 10, train_data, train_data)
+    y_axis_2.append(np.mean(n_net.train_nn()))
+
+    n_net = nn.neuro_net(learning_rate, 0, 100, train_data, train_data)
+    y_axis_2.append(np.mean(n_net.train_nn()))
+
+    n_net = nn.neuro_net(learning_rate, 0, 500, train_data, train_data)
+    y_axis_2.append(np.mean(n_net.train_nn()))
+
+    plt.plot(x_axis, y_axis_1, 'r--', x_axis, y_axis_2, 'b--')
+    plt.show()
+
 
 
 def get_mean_std(meta, data):
